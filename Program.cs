@@ -1,4 +1,5 @@
-﻿using System.IO.Pipes;
+﻿using System.Collections;
+using System.IO.Pipes;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -7,12 +8,27 @@ namespace GalacticPizzaChallenge;
 class Program
 {
 
-    private static string[] planets = { "Earth", "Mars", "Jupiter", "Saturn", "Venus", "Outpost" };
+    private static (string, float)[] planets =
+    {
+        ("Earth", 5),
+        ("Mars", 10),
+        ("Jupiter Station", 15),
+        ("Venus Outpost", 8)
+    };
+
+    private static (string, float)[] menu =
+    {
+        ("Galactic Cheese", 10),
+        ("Meteor Meat Lover", 15),
+        ("Veggie Nebula", 12),
+        ("Black Hole BBQ", 18)
+    };
 
     static void Main(string[] args)
     {
         string userName = "";
-        string deliveryLocation = "";
+        int deliveryLocation = -1;
+
         printBanner();
 
         userName = promptUserName();
@@ -32,17 +48,17 @@ class Program
         return Console.ReadLine() ?? "";
     }
 
-    private static string promptDeliveryLocation()
+    private static int promptDeliveryLocation()
     {
         int userSelection = -1;
 
-        while(userSelection == -1)
+        while (userSelection == -1)
         {
             Console.WriteLine("\n What planet should we deliver to?");
 
             for (int x = 0; x < planets.Length; x++)
             {
-                Console.WriteLine($"({x + 1}) {planets[x]}");
+                Console.WriteLine($"({x + 1}) {planets[x].Item1}");
             }
             Console.Write("Location: ");
 
@@ -52,7 +68,8 @@ class Program
             {
                 Console.WriteLine("Invalid Input!");
             }
-            else if (int.TryParse(tempInput, out userSelection)) {
+            else if (int.TryParse(tempInput, out userSelection))
+            {
                 if (userSelection < 0 || userSelection >= planets.Length)
                 {
                     Console.WriteLine("That is an invalid selection!");
@@ -64,7 +81,21 @@ class Program
             }
         }
 
-        return planets[userSelection - 1];
+        return userSelection - 1;
+    }
+
+    private static void printMenu()
+    {
+        
+    }
+    
+    private static ArrayList promptOrder()
+    {
+        ArrayList orders = new ArrayList();
+
+        
+
+        return orders;
     }
 
 

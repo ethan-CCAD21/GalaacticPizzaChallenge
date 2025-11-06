@@ -52,7 +52,7 @@ class Program
     {
         Console.WriteLine("What is the name for your order?");
         Console.Write("Name: ");
-        return Console.ReadLine() ?? "";
+        return Console.ReadLine() ?? "Anonymous User";
     }
 
     private static int promptDeliveryLocation()
@@ -71,7 +71,7 @@ class Program
 
             string? tempInput = Console.ReadLine();
 
-            if (tempInput == null)
+            if (string.IsNullOrWhiteSpace(tempInput))
             {
                 Console.WriteLine("Invalid Input!");
             }
@@ -114,7 +114,7 @@ class Program
             string? tempInput = Console.ReadLine();
             int selection;
 
-            if (tempInput == null)
+            if (string.IsNullOrWhiteSpace(tempInput))
             {
                 Console.WriteLine("Invalid Input!");
             }

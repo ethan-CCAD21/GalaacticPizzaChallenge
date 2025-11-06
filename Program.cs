@@ -2,6 +2,7 @@
 using System.IO.Pipes;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography.X509Certificates;
 
 namespace GalacticPizzaChallenge;
 
@@ -28,12 +29,15 @@ class Program
     {
         string userName = "";
         int deliveryLocation = -1;
+        ArrayList order;
 
         printBanner();
 
         userName = promptUserName();
 
         deliveryLocation = promptDeliveryLocation();
+
+        order = promptOrder();
     }
 
     private static void printBanner()
@@ -86,14 +90,55 @@ class Program
 
     private static void printMenu()
     {
-        
+        Console.WriteLine("\nChoose from the following (type \"done\" when you're finished):");
+
+        for(int x = 0; x < menu.Length; x++)
+        {
+            Console.WriteLine($"({x + 1}) {menu[x].Item1} ..... {menu[x].Item2}");
+        }
     }
     
     private static ArrayList promptOrder()
     {
         ArrayList orders = new ArrayList();
 
-        
+        bool done = false;
+
+        while (!done)
+        {
+            printMenu();
+
+            string? tempInput = Console.ReadLine();
+            int selection;
+
+            if (tempInput == null)
+            {
+                Console.WriteLine("Invalid Input!");
+            }
+            else if (int.TryParse(tempInput, out selection))
+            {
+                if (selection < 0 || selection >= menu.Length)
+                {
+                    Console.WriteLine("That is an invalid selection!");
+                }
+                else
+                {
+                    orders.Add(selection - 1);
+                    Console.WriteLine($"Added a {menu[selection - 1].Item1} to your order.");
+                }
+            }
+            else
+            {
+                if (tempInput.ToLower() == "done")
+                {
+                    done = true;
+                }
+                else
+                {
+                    Console.WriteLine("Try using the numbers or typing \"done\" if finished");
+                }
+            }
+        }
 
         return orders;
     }

@@ -31,31 +31,31 @@ class Program
         int deliveryLocation = -1;
         ArrayList order;
 
-        printBanner();
+        PrintBanner();
 
-        userName = promptUserName();
+        userName = PromptUserName();
 
-        deliveryLocation = promptDeliveryLocation();
+        deliveryLocation = PromptDeliveryLocation();
 
-        order = promptOrder();
+        order = PromptOrder();
 
-        printReceipt(userName, deliveryLocation, order);
+        PrintReceipt(userName, deliveryLocation, order);
 
     }
 
-    private static void printBanner()
+    private static void PrintBanner()
     {
         Console.WriteLine("Welcome to Galactic Pizza!\n");
     }
 
-    private static string promptUserName()
+    private static string PromptUserName()
     {
         Console.WriteLine("What is the name for your order?");
         Console.Write("Name: ");
         return Console.ReadLine() ?? "Anonymous User";
     }
 
-    private static int promptDeliveryLocation()
+    private static int PromptDeliveryLocation()
     {
         int userSelection = -1;
 
@@ -91,7 +91,7 @@ class Program
         return userSelection - 1;
     }
 
-    private static void printMenu()
+    private static void PrintMenu()
     {
         Console.WriteLine("\nChoose from the following (type \"done\" when you're finished):");
 
@@ -101,7 +101,7 @@ class Program
         }
     }
 
-    private static ArrayList promptOrder()
+    private static ArrayList PromptOrder()
     {
         ArrayList orders = new ArrayList();
 
@@ -109,7 +109,7 @@ class Program
 
         while (!done)
         {
-            printMenu();
+            PrintMenu();
 
             string? tempInput = Console.ReadLine();
             int selection;
@@ -146,7 +146,7 @@ class Program
         return orders;
     }
 
-    private static void printReceipt(string name, int deliveryLocation, ArrayList order)
+    private static void PrintReceipt(string name, int deliveryLocation, ArrayList order)
     {
         if (order.Count == 0)
         {

@@ -38,6 +38,9 @@ class Program
         deliveryLocation = promptDeliveryLocation();
 
         order = promptOrder();
+
+        printReceipt(userName, deliveryLocation, order);
+
     }
 
     private static void printBanner()
@@ -92,12 +95,12 @@ class Program
     {
         Console.WriteLine("\nChoose from the following (type \"done\" when you're finished):");
 
-        for(int x = 0; x < menu.Length; x++)
+        for (int x = 0; x < menu.Length; x++)
         {
             Console.WriteLine($"({x + 1}) {menu[x].Item1} ..... {menu[x].Item2}");
         }
     }
-    
+
     private static ArrayList promptOrder()
     {
         ArrayList orders = new ArrayList();
@@ -143,5 +146,32 @@ class Program
         return orders;
     }
 
+    private static void printReceipt(string name, int deliveryLocation, ArrayList order)
+    {
+        if (order.Count == 0)
+        {
+            Console.WriteLine("\nYou didn't order anything. See you again Next time!");
+        }
+        else
+        {
+            Console.WriteLine($"\nOrder for {name} to {planets[deliveryLocation].Item1}");
+            Console.WriteLine("-----------------------------------");
+
+            float subtotal = 0;
+
+            for (int x = 0; x < order.Count; x++)
+            {
+                Console.WriteLine($"1 x {menu[(int)order[x]].Item1} @ {menu[(int)order[x]].Item2}");
+                subtotal += menu[(int)order[x]].Item2;
+            }
+
+            Console.WriteLine($"Subtotal: {subtotal}");
+
+            float total = subtotal + planets[deliveryLocation].Item2;
+
+            Console.WriteLine($"Delivery Fee: {planets[deliveryLocation].Item2}");
+            Console.WriteLine($"Total Due: {total} Credits");
+        }
+    }
 
 }

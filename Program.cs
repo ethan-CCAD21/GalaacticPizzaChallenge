@@ -9,37 +9,50 @@ namespace GalacticPizzaChallenge;
 class Program
 {
 
-    private static (string, float)[] planets =
-    {
-        ("Earth", 5),
-        ("Mars", 10),
-        ("Jupiter Station", 15),
-        ("Venus Outpost", 8)
-    };
+    private static List<DeliveryLocation> _locations;
+    private static List<MenuItem> _menu;
 
-    private static (string, float)[] menu =
-    {
-        ("Galactic Cheese", 10),
-        ("Meteor Meat Lover", 15),
-        ("Veggie Nebula", 12),
-        ("Black Hole BBQ", 18)
-    };
+    private static Order _order;
+
 
     static void Main(string[] args)
     {
-        string userName = "";
-        int deliveryLocation = -1;
         ArrayList order;
+
+        _order = new Order();
+
+        InitLocations();
+        InitMenu();
 
         PrintBanner();
 
-        userName = PromptUserName();
+        PromptUserName();
 
-        deliveryLocation = PromptDeliveryLocation();
+        PromptDeliveryLocation();
 
-        order = PromptOrder();
+        PromptOrder();
 
-        PrintReceipt(userName, deliveryLocation, order);
+        PrintReceipt();
+    }
+
+    private static void InitLocations()
+    {
+        _locations = new List<DeliveryLocation>([
+            new DeliveryLocation("location_1", "Earth", 5),
+            new DeliveryLocation("location_2", "Mars", 10),
+            new DeliveryLocation("location_3", "Jupiter Station", 15),
+            new DeliveryLocation("location_4", "Venus Outpost", 8)
+        ]);
+    }
+    
+    private static void InitMenu()
+    {
+        _menu = new List<MenuItem>([
+            new MenuItem("menuItem_1", "Galactic Cheese", 10),
+            new MenuItem("menuItem_2", "Meteor Meat Lover", 15),
+            new MenuItem("menuItem_3", "Veggie Nebula", 12),
+            new MenuItem("menuItem_4", "Black Hole BBQ", 18)
+        ]);
     }
 
     private static void PrintBanner()
@@ -47,14 +60,16 @@ class Program
         Console.WriteLine("Welcome to Galactic Pizza!\n");
     }
 
-    private static string PromptUserName()
+    private static void PromptUserName()
     {
         Console.WriteLine("What is the name for your order?");
         Console.Write("Name: ");
-        return Console.ReadLine() ?? "Anonymous User";
+
+        string name = Console.ReadLine() ?? "Anonymous User";
+        _order.UserName = name;
     }
 
-    private static int PromptDeliveryLocation()
+    private static void PromptDeliveryLocation()
     {
         int userSelection = -1;
 
@@ -62,9 +77,9 @@ class Program
         {
             Console.WriteLine("\n What planet should we deliver to?");
 
-            for (int x = 0; x < planets.Length; x++)
+            for (int x = 0; x < _locations.Count; x++)
             {
-                Console.WriteLine($"({x + 1}) {planets[x].Item1}");
+                Console.WriteLine($"({x + 1}) {_locations[x].Name}");
             }
             Console.Write("Location: ");
 
@@ -76,9 +91,13 @@ class Program
             }
             else if (int.TryParse(tempInput, out userSelection))
             {
-                if (userSelection < 0 || userSelection >= planets.Length)
+                if (userSelection < 1 || userSelection > _locations.Count)
                 {
                     Console.WriteLine("That is an invalid selection!");
+                }
+                else
+                {
+                    _order.Location = _locations[userSelection - 1];
                 }
             }
             else
@@ -86,24 +105,20 @@ class Program
                 Console.WriteLine("Try using the numbers!");
             }
         }
-
-        return userSelection - 1;
     }
 
     private static void PrintMenu()
     {
         Console.WriteLine("\nChoose from the following (type \"done\" when you're finished):");
 
-        for (int x = 0; x < menu.Length; x++)
+        for (int x = 0; x < _menu.Count; x++)
         {
-            Console.WriteLine($"({x + 1}) {menu[x].Item1} ..... {menu[x].Item2}");
+            Console.WriteLine($"({x + 1}) {_menu[x].Name} ..... {_menu[x].Name}");
         }
     }
 
-    private static ArrayList PromptOrder()
+    private static void PromptOrder()
     {
-        ArrayList orders = new ArrayList();
-
         bool done = false;
 
         while (!done)
@@ -119,14 +134,14 @@ class Program
             }
             else if (int.TryParse(tempInput, out selection))
             {
-                if (selection < 0 || selection >= menu.Length)
+                if (selection < 1 || selection > _menu.Count)
                 {
                     Console.WriteLine("That is an invalid selection!");
                 }
                 else
                 {
-                    orders.Add(selection - 1);
-                    Console.WriteLine($"Added a {menu[selection - 1].Item1} to your order.");
+                    _order.AddItem(_menu[selection - 1]);
+                    Console.WriteLine($"Added a {_menu[selection - 1].Name} to your order.");
                 }
             }
             else
@@ -141,34 +156,37 @@ class Program
                 }
             }
         }
-
-        return orders;
     }
 
-    private static void PrintReceipt(string name, int deliveryLocation, ArrayList order)
+    private static void PrintReceipt()
     {
-        if (order.Count == 0)
+        if (_order.OrderItems.Count == 0)
         {
             Console.WriteLine("\nYou didn't order anything. See you again Next time!");
         }
         else
         {
-            Console.WriteLine($"\nOrder for {name} to {planets[deliveryLocation].Item1}");
+            Console.WriteLine($"\nOrder for {_order.UserName} to {_order.Location.Name}");
             Console.WriteLine("-----------------------------------");
 
             float subtotal = 0;
 
-            for (int x = 0; x < order.Count; x++)
+            string[] orderItemKeys = _order.OrderItems.Keys.ToArray();
+
+            for (int x = 0; x < orderItemKeys.Length; x++)
             {
-                Console.WriteLine($"1 x {menu[(int)order[x]].Item1} @ {menu[(int)order[x]].Item2}");
-                subtotal += menu[(int)order[x]].Item2;
+
+                OrderItem orderItem = _order.OrderItems[orderItemKeys[x]];
+
+                Console.WriteLine($"{orderItem.Quantity} x {orderItem.MenuItemName} @ {orderItem.MenuItemPrice}");
+                subtotal += orderItem.TotalPrice;
             }
 
             Console.WriteLine($"Subtotal: {subtotal}");
 
-            float total = subtotal + planets[deliveryLocation].Item2;
+            float total = subtotal + _order.Location.Fee;
 
-            Console.WriteLine($"Delivery Fee: {planets[deliveryLocation].Item2}");
+            Console.WriteLine($"Delivery Fee: {_order.Location.Fee}");
             Console.WriteLine($"Total Due: {total} Credits");
         }
     }

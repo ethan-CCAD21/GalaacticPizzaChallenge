@@ -40,7 +40,6 @@ class Program
         order = PromptOrder();
 
         PrintReceipt(userName, deliveryLocation, order);
-
     }
 
     private static void PrintBanner()

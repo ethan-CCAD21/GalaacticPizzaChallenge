@@ -62,6 +62,9 @@ class Program
                     break;
             }
         }
+
+        Console.WriteLine("Press any key to close program...");
+        Console.ReadKey();
     }
 
     private static void InitLocations()

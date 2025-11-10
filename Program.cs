@@ -62,16 +62,6 @@ class Program
                     break;
             }
         }
-
-        // PrintBanner();
-
-        // PromptUserName();
-
-        // PromptDeliveryLocation();
-
-        // PromptOrder();
-
-        // PrintReceipt();
     }
 
     private static void InitLocations()

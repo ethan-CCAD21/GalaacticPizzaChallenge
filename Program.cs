@@ -18,12 +18,12 @@ class Program
 
     private enum ProgramState
     {
-        USERNAME,
-        LOCATION,
-        ORDER,
-        RECEIPT
+        username,
+        location,
+        order,
+        receipt
     }
-    private static ProgramState _programState = ProgramState.USERNAME;
+    private static ProgramState _programState = ProgramState.username;
 
     private static string _errorMessage = "";
 
@@ -48,16 +48,16 @@ class Program
 
             switch (_programState)
             {
-                case ProgramState.USERNAME:
+                case ProgramState.username:
                     PromptUserName();
                     break;
-                case ProgramState.LOCATION:
+                case ProgramState.location:
                     PromptDeliveryLocation();
                     break;
-                case ProgramState.ORDER:
+                case ProgramState.order:
                     PromptOrder();
                     break;
-                case ProgramState.RECEIPT:
+                case ProgramState.receipt:
                     PrintReceipt();
                     break;
             }
@@ -123,7 +123,7 @@ class Program
         string name = Console.ReadLine() ?? "Anonymous User";
         _order.UserName = name;
 
-        _programState = ProgramState.LOCATION;
+        _programState = ProgramState.location;
     }
 
     private static void PromptDeliveryLocation()
@@ -155,7 +155,7 @@ class Program
                 _order.Location = _locations[userSelection - 1];
 
                 _errorMessage = "";
-                _programState = ProgramState.ORDER;
+                _programState = ProgramState.order;
             }
         }
         else
@@ -207,7 +207,7 @@ class Program
         {
             if (tempInput.ToLower() == "done")
             {
-                _programState = ProgramState.RECEIPT;
+                _programState = ProgramState.receipt;
 
                 _errorMessage = "";
                 _infoMessage = "";

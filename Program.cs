@@ -14,23 +14,64 @@ class Program
 
     private static Order _order;
 
+    private static bool _isDone;
+
+    private enum ProgramState
+    {
+        USERNAME,
+        LOCATION,
+        ORDER,
+        RECEIPT
+    }
+    private static ProgramState _programState = ProgramState.USERNAME;
+
+    private static string _errorMessage = "";
+
+    private static string _infoMessage = "";
 
     static void Main(string[] args)
     {
         _order = new Order();
 
+        _isDone = false;
+
         InitLocations();
         InitMenu();
 
-        PrintBanner();
+        while (!_isDone)
+        {
+            Console.Clear();
 
-        PromptUserName();
+            PrintBanner();
+            PrintError();
+            PrintInfo();
 
-        PromptDeliveryLocation();
+            switch (_programState)
+            {
+                case ProgramState.USERNAME:
+                    PromptUserName();
+                    break;
+                case ProgramState.LOCATION:
+                    PromptDeliveryLocation();
+                    break;
+                case ProgramState.ORDER:
+                    PromptOrder();
+                    break;
+                case ProgramState.RECEIPT:
+                    PrintReceipt();
+                    break;
+            }
+        }
 
-        PromptOrder();
+        // PrintBanner();
 
-        PrintReceipt();
+        // PromptUserName();
+
+        // PromptDeliveryLocation();
+
+        // PromptOrder();
+
+        // PrintReceipt();
     }
 
     private static void InitLocations()
@@ -55,7 +96,30 @@ class Program
 
     private static void PrintBanner()
     {
-        Console.WriteLine("Welcome to Galactic Pizza!\n");
+        if (String.IsNullOrEmpty(_order.UserName))
+        {
+            Console.WriteLine("Welcome to Galactic Pizza!\n");
+        }
+        else
+        {
+            Console.WriteLine($"Welcome to Galactic Pizza, {_order.UserName}!\n");
+        }
+    }
+
+    private static void PrintError()
+    {
+        if (!String.IsNullOrEmpty(_errorMessage))
+        {
+            Console.WriteLine($"Error: {_errorMessage}\n");
+        }
+    }
+    
+    private static void PrintInfo()
+    {
+        if(!String.IsNullOrEmpty(_infoMessage))
+        {
+            Console.WriteLine($"{_infoMessage}\n");
+        }
     }
 
     private static void PromptUserName()
@@ -65,49 +129,52 @@ class Program
 
         string name = Console.ReadLine() ?? "Anonymous User";
         _order.UserName = name;
+
+        _programState = ProgramState.LOCATION;
     }
 
     private static void PromptDeliveryLocation()
     {
-        int userSelection = -1;
+        int userSelection;
 
-        while (userSelection == -1)
+        Console.WriteLine("What planet should we deliver to?");
+
+        for (int x = 0; x < _locations.Count; x++)
         {
-            Console.WriteLine("\n What planet should we deliver to?");
+            Console.WriteLine($"({x + 1}) {_locations[x].Name}");
+        }
+        Console.Write("Location: ");
 
-            for (int x = 0; x < _locations.Count; x++)
-            {
-                Console.WriteLine($"({x + 1}) {_locations[x].Name}");
-            }
-            Console.Write("Location: ");
+        string? tempInput = Console.ReadLine();
 
-            string? tempInput = Console.ReadLine();
-
-            if (string.IsNullOrWhiteSpace(tempInput))
+        if (string.IsNullOrWhiteSpace(tempInput))
+        {
+            _errorMessage = "Invalid Input!";
+        }
+        else if (int.TryParse(tempInput, out userSelection))
+        {
+            if (userSelection < 1 || userSelection > _locations.Count)
             {
-                Console.WriteLine("Invalid Input!");
-            }
-            else if (int.TryParse(tempInput, out userSelection))
-            {
-                if (userSelection < 1 || userSelection > _locations.Count)
-                {
-                    Console.WriteLine("That is an invalid selection!");
-                }
-                else
-                {
-                    _order.Location = _locations[userSelection - 1];
-                }
+                _errorMessage = "That is an invalid selection!";
             }
             else
             {
-                Console.WriteLine("Try using the numbers!");
+                _order.Location = _locations[userSelection - 1];
+
+                _errorMessage = "";
+                _programState = ProgramState.ORDER;
             }
         }
+        else
+        {
+            _errorMessage = "Try using the location numbers!";
+        }
+        
     }
 
     private static void PrintMenu()
     {
-        Console.WriteLine("\nChoose from the following (type \"done\" when you're finished):");
+        Console.WriteLine("Choose from the following (type \"done\" when you're finished):");
 
         for (int x = 0; x < _menu.Count; x++)
         {
@@ -117,54 +184,59 @@ class Program
 
     private static void PromptOrder()
     {
-        bool done = false;
+        
+        PrintMenu();
 
-        while (!done)
+        string? tempInput = Console.ReadLine();
+        int selection;
+
+        if (string.IsNullOrWhiteSpace(tempInput))
         {
-            PrintMenu();
-
-            string? tempInput = Console.ReadLine();
-            int selection;
-
-            if (string.IsNullOrWhiteSpace(tempInput))
+            _errorMessage = "Invalid Input!";
+            _infoMessage = "";
+        }
+        else if (int.TryParse(tempInput, out selection))
+        {
+            if (selection < 1 || selection > _menu.Count)
             {
-                Console.WriteLine("Invalid Input!");
-            }
-            else if (int.TryParse(tempInput, out selection))
-            {
-                if (selection < 1 || selection > _menu.Count)
-                {
-                    Console.WriteLine("That is an invalid selection!");
-                }
-                else
-                {
-                    _order.AddItem(_menu[selection - 1]);
-                    Console.WriteLine($"Added a {_menu[selection - 1].Name} to your order.");
-                }
+                _errorMessage = "That is an invalid selection!";
+                _infoMessage = "";
             }
             else
             {
-                if (tempInput.ToLower() == "done")
-                {
-                    done = true;
-                }
-                else
-                {
-                    Console.WriteLine("Try using the numbers or typing \"done\" if finished");
-                }
+                _order.AddItem(_menu[selection - 1]);
+
+                _errorMessage = "";
+                _infoMessage = $"Added a {_menu[selection - 1].Name} to your order.";
             }
         }
+        else
+        {
+            if (tempInput.ToLower() == "done")
+            {
+                _programState = ProgramState.RECEIPT;
+
+                _errorMessage = "";
+                _infoMessage = "";
+            }
+            else
+            {
+                _errorMessage = "Try using the numbers or typing \"done\" if finished";
+                _infoMessage = "";
+            }
+        }
+        
     }
 
     private static void PrintReceipt()
     {
         if (_order.OrderItems.Count == 0)
         {
-            Console.WriteLine("\nYou didn't order anything. See you again Next time!");
+            Console.WriteLine("You didn't order anything. See you again Next time!");
         }
         else
         {
-            Console.WriteLine($"\nOrder for {_order.UserName} to {_order.Location.Name}");
+            Console.WriteLine($"Order for {_order.UserName} to {_order.Location.Name}");
             Console.WriteLine("-----------------------------------");
 
             float subtotal = 0;
@@ -180,13 +252,17 @@ class Program
                 subtotal += orderItem.TotalPrice;
             }
 
+            Console.WriteLine("-----------------------------------");
+
             Console.WriteLine($"Subtotal: {subtotal}");
 
             float total = subtotal + _order.Location.Fee;
 
             Console.WriteLine($"Delivery Fee: {_order.Location.Fee}");
-            Console.WriteLine($"Total Due: {total} Credits");
+            Console.WriteLine($"\nTotal Due: {total} Credits\n");
         }
+
+        _isDone = true;
     }
 
 }

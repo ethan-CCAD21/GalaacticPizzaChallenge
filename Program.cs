@@ -17,8 +17,6 @@ class Program
 
     static void Main(string[] args)
     {
-        ArrayList order;
-
         _order = new Order();
 
         InitLocations();
